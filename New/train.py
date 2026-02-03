@@ -6,7 +6,7 @@ from config import config
 import numpy as np
 import random
 from torch.utils.tensorboard import SummaryWriter
-from sklearn.model_selection import KFold
+from sklearn.model_selection import StratifiedKFold   # ✅ CHANGED
 from torch.utils.data import DataLoader, SubsetRandomSampler
 from valid import valid
 from hovertrans import create_model
@@ -105,12 +105,16 @@ def train(config, train_loader, test_loader, fold):
         print(f"[Epoch {epoch+1}/{config.epochs}] Train Loss: {epoch_loss:.4f}")
 
         # ===============================
-        # VALIDATION
+        # VALIDATION (TTA ENABLED ✅)
         # ===============================
         if (epoch + 1) % config.log_step == 0:
             with torch.no_grad():
                 val_loss, val_acc, sen, spe, auc, pre, f1score = valid(
-                    config, model, test_loader, criterion
+                    config,
+                    model,
+                    test_loader,
+                    criterion,
+                    use_tta=True        # ✅ CHANGED
                 )
 
             writer.add_scalar('Val/Acc', val_acc, epoch)
@@ -129,7 +133,6 @@ def train(config, train_loader, test_loader, fold):
                 )
                 print("=> Saved Best Model")
 
-                # Save best result
                 with open(os.path.join(model_save_path, 'result.txt'), 'w') as f:
                     f.write("Best Result:\n")
                     f.write(
@@ -139,7 +142,7 @@ def train(config, train_loader, test_loader, fold):
                     )
 
     # ===============================
-    # FINE-TUNING (LR ↓ 10x)
+    # FINE-TUNING
     # ===============================
     print("START FINE-TUNING")
 
@@ -177,11 +180,15 @@ def train(config, train_loader, test_loader, fold):
     print("Fine-tuning completed")
 
     # ===============================
-    # FINAL RESULT (ALWAYS SAVED)
+    # FINAL RESULT (TTA ENABLED)
     # ===============================
     with torch.no_grad():
         val_loss, val_acc, sen, spe, auc, pre, f1score = valid(
-            config, model, test_loader, criterion
+            config,
+            model,
+            test_loader,
+            criterion,
+            use_tta=True          # ✅ CHANGED
         )
 
     with open(os.path.join(model_save_path, 'result.txt'), 'a') as f:
@@ -214,8 +221,6 @@ if __name__ == '__main__':
     seed_torch(42)
     args = config()
 
-    cv = KFold(n_splits=args.fold, shuffle=True, random_state=42)
-
     train_set = utils.get_dataset(
         args.data_path, args.csv_path, args.img_size, mode='train'
     )
@@ -223,7 +228,15 @@ if __name__ == '__main__':
         args.data_path, args.csv_path, args.img_size, mode='test'
     )
 
-    for fold, (train_idx, test_idx) in enumerate(cv.split(train_set)):
+    labels = train_set.info['label'].values     # ✅ REQUIRED for StratifiedKFold
+
+    cv = StratifiedKFold(
+        n_splits=args.fold,
+        shuffle=True,
+        random_state=42
+    )
+
+    for fold, (train_idx, test_idx) in enumerate(cv.split(train_set, labels)):
         print(f"\nFold {fold}")
 
         train_loader = DataLoader(
