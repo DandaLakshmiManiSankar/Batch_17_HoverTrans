@@ -6,7 +6,7 @@ def config():
     parser.add_argument('--data_path', type=str)
     parser.add_argument('--csv_path', type=str)
     parser.add_argument('--model_name', type=str, default='hovertrans')
-    parser.add_argument('--model_path', type=str, default='./weight')
+    parser.add_argument('--model_path', type=str, default='/kaggle/working/models')
     parser.add_argument('--writer_comment', type=str, default='GDPH&SYSUCC')
     parser.add_argument('--save_model', type=bool, default=True)
 
@@ -14,8 +14,8 @@ def config():
     parser.add_argument('--img_size', type=int, default=256)
     parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--class_num', type=int, default=2)
-    parser.add_argument('--fold', type=int, default=5)
-    parser.add_argument('--epochs', type=int, default=250)
+    parser.add_argument('--fold', type=int, default=5) 
+    parser.add_argument('--epochs', type=int, default=80) 
     parser.add_argument('--log_step', type=int, default=5)
     parser.add_argument('--lr', type=float, default=0.0001)
 
