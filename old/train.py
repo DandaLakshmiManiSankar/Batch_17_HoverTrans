@@ -45,7 +45,6 @@ def train(config, train_loader, test_loader, fold, test_idx):
     
     print("START TRAINING")
     best_acc=0
-  
     ckpt_path = os.path.join(config.model_path, config.model_name, config.writer_comment)
     model_save_path = os.path.join(ckpt_path, str(fold))
     cm = None
@@ -75,7 +74,7 @@ def train(config, train_loader, test_loader, fold, test_idx):
         lr_scheduler.step()
         
         if (epoch + 1) % config.log_step == 0:
-            print('[epoch %d]' % (epoch + 1))
+            print('[epoch %d]' % epoch)
             with torch.no_grad():
                 result = valid(config, model, test_loader, criterion)
             val_loss, val_acc, sen, spe, auc, pre, f1score = result
@@ -147,8 +146,7 @@ if __name__ == '__main__':
         print("\nCross validation fold %d" %fold)
         train_sampler = SubsetRandomSampler(train_idx)
         test_sampler= SubsetRandomSampler(test_idx)
-        train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=False, sampler=train_sampler, num_workers=2)
-        test_loader = DataLoader(test_set, batch_size=1, shuffle=False, sampler=test_sampler, num_workers=2)
-
+        train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=False,sampler=train_sampler, num_workers=2)
+        test_loader = DataLoader(test_set, batch_size=1, shuffle=False,sampler=test_sampler)
         train(args, train_loader, test_loader, fold, test_idx)
         fold+=1
