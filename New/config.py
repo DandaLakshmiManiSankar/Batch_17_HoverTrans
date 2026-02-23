@@ -34,7 +34,7 @@ def config():
     parser.add_argument('--min_lr', type=float, default=1e-6)
     parser.add_argument('--step', type=int, default=5)
 
-        parser.add_argument('--step', type=int, default=5)
+   
 
     # ======================
     # SSL PRETRAIN SETTINGS
