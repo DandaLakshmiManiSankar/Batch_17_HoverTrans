@@ -34,6 +34,24 @@ def config():
     parser.add_argument('--min_lr', type=float, default=1e-6)
     parser.add_argument('--step', type=int, default=5)
 
+        parser.add_argument('--step', type=int, default=5)
 
+    # ======================
+    # SSL PRETRAIN SETTINGS
+    # ======================
+
+    parser.add_argument('--ssl_pretrain', type=bool, default=False)
+    parser.add_argument('--ssl_epochs', type=int, default=150)
+    parser.add_argument('--ssl_batch_size', type=int, default=32)
+    parser.add_argument('--ssl_lr', type=float, default=1e-4)
+
+    parser.add_argument('--finetune_epochs', type=int, default=50)
+    parser.add_argument('--finetune_batch_size', type=int, default=16)
+
+    parser.add_argument('--ssl_model_path', type=str, default='mae_encoder.pth')
+
+
+    config = parser.parse_args()
+    return config
     config = parser.parse_args()
     return config
