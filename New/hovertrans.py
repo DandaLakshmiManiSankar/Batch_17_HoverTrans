@@ -25,7 +25,7 @@ class DropPath(nn.Module):
         return drop_path(x, self.drop_prob, self.training)
 
 
-class Attention(nn.Module):
+class Attention(nn.Module):   #Added Attention Mechanism
     def __init__(self, dim, hidden_dim, num_heads=8, qkv_bias=False, attn_drop=0., proj_drop=0.):
         super().__init__()
         self.hidden_dim = hidden_dim
